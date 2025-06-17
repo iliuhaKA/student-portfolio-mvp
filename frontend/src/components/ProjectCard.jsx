@@ -1,0 +1,72 @@
+import React from 'react';
+import { ExternalLink, Github, Calendar } from 'lucide-react';
+
+const ProjectCard = ({ project }) => {
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('ru-RU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <div className="card">
+      {project.image_url && (
+        <div className="mb-4">
+          <img 
+            src={project.image_url} 
+            alt={project.title}
+            className="w-full h-48 object-cover rounded-lg"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+      
+      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        {project.title}
+      </h3>
+      
+      <p className="text-gray-600 mb-4">
+        {project.description}
+      </p>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-1 text-sm text-gray-500">
+          <Calendar className="w-4 h-4" />
+          <span>{formatDate(project.created_at)}</span>
+        </div>
+        
+        <div className="flex space-x-2">
+          {project.github_url && (
+            <a 
+              href={project.github_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title="GitHub"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+          )}
+          
+          {project.demo_url && (
+            <a 
+              href={project.demo_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Демо"
+            >
+              <ExternalLink className="w-5 h-5" />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProjectCard;
