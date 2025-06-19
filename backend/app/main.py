@@ -79,6 +79,14 @@ def read_student(student_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Student not found")
     return db_student
 
+@app.delete("/api/students/{student_id}")
+def delete_student(student_id: int, db: Session = Depends(get_db)):
+    """Удаление студента"""
+    result = crud.delete_student(db, student_id=student_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Student not found")
+    return {"message": "Student deleted successfully"}
+
 # Endpoints для проектов
 @app.post("/api/projects/", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
@@ -99,6 +107,14 @@ def read_student_projects(student_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Student not found")
     
     return crud.get_projects_by_student(db, student_id=student_id)
+
+@app.delete("/api/projects/{project_id}")
+def delete_project(project_id: int, db: Session = Depends(get_db)):
+    """Удаление проекта"""
+    result = crud.delete_project(db, project_id=project_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {"message": "Project deleted successfully"}
 
 # Health check
 @app.get("/health")

@@ -38,3 +38,28 @@ def create_project(db: Session, project: schemas.ProjectCreate):
 
 def get_project(db: Session, project_id: int):
     return db.query(models.Project).filter(models.Project.id == project_id).first()
+
+def delete_project(db: Session, project_id: int):
+    """Удаление проекта"""
+    project = db.query(models.Project).filter(models.Project.id == project_id).first()
+    if not project:
+        return False
+    
+    db.delete(project)
+    db.commit()
+    return True
+
+def delete_student(db: Session, student_id: int):
+    """Удаление студента и всех его проектов"""
+    # Сначала проверяем, существует ли студент
+    student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not student:
+        return False
+    
+    # Удаляем все проекты студента
+    db.query(models.Project).filter(models.Project.student_id == student_id).delete()
+    
+    # Удаляем самого студента
+    db.delete(student)
+    db.commit()
+    return True
