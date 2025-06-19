@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { projectsApi } from '../api/client';
+import axios from 'axios';
+
 
 const CreateProjectForm = ({ studentId, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -9,8 +11,21 @@ const CreateProjectForm = ({ studentId, onSuccess, onCancel }) => {
     demo_url: '',
     image_url: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setSelectedImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+};
+
 
   const handleChange = (e) => {
     setFormData({
@@ -31,20 +46,20 @@ const CreateProjectForm = ({ studentId, onSuccess, onCancel }) => {
     setError('');
 
     try {
-      const projectData = {
-        ...formData,
-        student_id: studentId,
-        // Убираем пустые URL
-        github_url: formData.github_url.trim() || null,
-        demo_url: formData.demo_url.trim() || null,
-        image_url: formData.image_url.trim() || null
-      };
-      
-      const project = await projectsApi.create(projectData);
-      onSuccess(project);
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('student_id', studentId);
+      if (formData.github_url.trim()) formDataToSend.append('github_url', formData.github_url);
+      if (formData.demo_url.trim()) formDataToSend.append('demo_url', formData.demo_url);
+      if (selectedImage) formDataToSend.append('image', selectedImage);
+
+      const response = await axios.post('http://localhost:8000/api/projects/', formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      onSuccess(response.data);
     } catch (err) {
       setError('Ошибка при создании проекта. Попробуйте еще раз.');
-      console.error('Create project error:', err);
     } finally {
       setLoading(false);
     }
@@ -126,21 +141,22 @@ const CreateProjectForm = ({ studentId, onSuccess, onCancel }) => {
         </div>
         
         <div>
-          <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">
-            Изображение проекта (URL)
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Изображение проекта
           </label>
           <input
-            type="url"
-            id="image_url"
-            name="image_url"
-            value={formData.image_url}
-            onChange={handleChange}
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
             className="input-field"
-            placeholder="https://example.com/screenshot.png"
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Можно использовать imgur.com или другие сервисы для загрузки изображений
-          </p>
+          {previewUrl && (
+            <div className="mt-2">
+              <img src={previewUrl} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
+            </div>
+          )}
         </div>
         
         <div className="flex space-x-3 pt-4">

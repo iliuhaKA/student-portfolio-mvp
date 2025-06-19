@@ -26,15 +26,13 @@ const ProjectCard = ({ project, onDelete }) => {
         <X className="w-5 h-5 text-red-500" />
       </button>
 
-      {project.image_url && (
+      {project.image && (
         <div className="mb-4">
-          <img 
-            src={project.image_url} 
+          <img
+            src={`http://localhost:8000/uploads/${project.image}`}
             alt={project.title}
             className="w-full h-48 object-cover rounded-lg"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
+            onError={e => { e.target.style.display = 'none'; }}
           />
         </div>
       )}
