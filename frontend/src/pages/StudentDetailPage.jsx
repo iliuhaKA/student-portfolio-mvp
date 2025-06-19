@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Plus, User, Calendar } from 'lucide-react';
 import ProjectCard from '../components/ProjectCard';
 import CreateProjectForm from '../components/CreateProjectForm';
-import { studentsApi } from '../api/client';
+import { studentsApi, projectsApi } from '../api/client';
 
 const StudentDetailPage = () => {
   const { id } = useParams();
@@ -38,6 +38,19 @@ const StudentDetailPage = () => {
       projects: [...prev.projects, newProject]
     }));
     setShowCreateProject(false);
+  };
+
+  const handleProjectDelete = async (projectId) => {
+    try {
+      await projectsApi.delete(projectId);
+      setStudent(prev => ({
+        ...prev,
+        projects: prev.projects.filter(project => project.id !== projectId)
+      }));
+    } catch (err) {
+      setError('Ошибка при удалении проекта');
+      console.error('Delete project error:', err);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -173,7 +186,11 @@ const StudentDetailPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {student.projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                onDelete={handleProjectDelete}
+              />
             ))}
           </div>
         )}

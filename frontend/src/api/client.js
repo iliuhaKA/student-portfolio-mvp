@@ -37,6 +37,12 @@ export const studentsApi = {
   create: async (studentData) => {
     const response = await apiClient.post('/api/students/', studentData);
     return response.data;
+  },
+
+  // Удалить студента
+  delete: async (id) => {
+    const response = await apiClient.delete(`/api/students/${id}`);
+    return response.data;
   }
 };
 
@@ -51,6 +57,12 @@ export const projectsApi = {
   // Получить проекты студента
   getByStudentId: async (studentId) => {
     const response = await apiClient.get(`/api/students/${studentId}/projects`);
+    return response.data;
+  },
+
+  // Удалить проект
+  delete: async (id) => {
+    const response = await apiClient.delete(`/api/projects/${id}`);
     return response.data;
   }
 };

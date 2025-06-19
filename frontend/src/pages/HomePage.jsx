@@ -26,6 +26,16 @@ const HomePage = () => {
     }
   };
 
+  const handleDeleteStudent = async (studentId) => {
+    try {
+      await studentsApi.delete(studentId);
+      setStudents(students.filter(student => student.id !== studentId));
+    } catch (err) {
+      setError('Ошибка при удалении студента');
+      console.error('Delete student error:', err);
+    }
+  };
+
   useEffect(() => {
     loadStudents();
   }, []);
@@ -124,7 +134,11 @@ const HomePage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {students.map((student) => (
-              <StudentCard key={student.id} student={student} />
+              <StudentCard 
+                key={student.id} 
+                student={student} 
+                onDelete={handleDeleteStudent}
+              />
             ))}
           </div>
         )}

@@ -1,7 +1,7 @@
 import React from 'react';
-import { ExternalLink, Github, Calendar } from 'lucide-react';
+import { ExternalLink, Github, Calendar, X } from 'lucide-react';
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, onDelete }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
       year: 'numeric',
@@ -10,8 +10,22 @@ const ProjectCard = ({ project }) => {
     });
   };
 
+  const handleDelete = () => {
+    if (window.confirm('Вы уверены, что хотите удалить этот проект?')) {
+      onDelete(project.id);
+    }
+  };
+
   return (
-    <div className="card">
+    <div className="card relative">
+      <button
+        onClick={handleDelete}
+        className="absolute top-2 right-2 p-1 rounded-full hover:bg-red-100 transition-colors duration-200"
+        title="Удалить проект"
+      >
+        <X className="w-5 h-5 text-red-500" />
+      </button>
+
       {project.image_url && (
         <div className="mb-4">
           <img 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, Calendar, Folder } from 'lucide-react';
+import { User, Calendar, Folder, X } from 'lucide-react';
 
-const StudentCard = ({ student }) => {
+const StudentCard = ({ student, onDelete }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
       year: 'numeric',
@@ -11,9 +11,24 @@ const StudentCard = ({ student }) => {
     });
   };
 
+  const handleDelete = (e) => {
+    e.preventDefault(); // Предотвращаем переход по ссылке
+    if (window.confirm('Вы уверены, что хотите удалить этого студента?')) {
+      onDelete(student.id);
+    }
+  };
+
   return (
     <Link to={`/student/${student.id}`} className="block">
-      <div className="card hover:shadow-md transition-shadow duration-200 cursor-pointer">
+      <div className="card hover:shadow-md transition-shadow duration-200 cursor-pointer relative">
+        <button
+          onClick={handleDelete}
+          className="absolute top-2 right-2 p-1 rounded-full hover:bg-red-100 transition-colors duration-200"
+          title="Удалить студента"
+        >
+          <X className="w-5 h-5 text-red-500" />
+        </button>
+
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
