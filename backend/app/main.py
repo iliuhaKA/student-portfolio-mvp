@@ -104,3 +104,4 @@ def read_student_projects(student_id: int, db: Session = Depends(get_db)):
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "message": "API is working correctly"}
+    
