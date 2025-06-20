@@ -23,7 +23,7 @@ class Project(Base):
     description = Column(Text, nullable=False)
     github_url = Column(String, nullable=True)
     demo_url = Column(String, nullable=True)
-    image_url = Column(String, nullable=True)
+    image = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Связь со студентом

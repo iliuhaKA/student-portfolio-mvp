@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from . import models, schemas
+import uuid
+from datetime import datetime
 
 # CRUD для Student
 def get_student(db: Session, student_id: int):
@@ -29,8 +31,14 @@ def search_students(db: Session, query: str):
 def get_projects_by_student(db: Session, student_id: int):
     return db.query(models.Project).filter(models.Project.student_id == student_id).all()
 
-def create_project(db: Session, project: schemas.ProjectCreate):
-    db_project = models.Project(**project.dict())
+def generate_unique_filename():
+    return f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{str(uuid.uuid4())[:8]}"
+
+def create_project(db: Session, project: schemas.ProjectCreate, image: str = None):
+    db_project = models.Project(
+        **project.dict(),
+        image=image
+    )
     db.add(db_project)
     db.commit()
     db.refresh(db_project)

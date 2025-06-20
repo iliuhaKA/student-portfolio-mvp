@@ -8,9 +8,13 @@ class ProjectBase(BaseModel):
     description: str
     github_url: Optional[str] = None
     demo_url: Optional[str] = None
-    image_url: Optional[str] = None
+    image: Optional[str] = None  # путь к файлу
 
-class ProjectCreate(ProjectBase):
+class ProjectCreate(BaseModel):
+    title: str
+    description: str
+    github_url: Optional[str] = None
+    demo_url: Optional[str] = None
     student_id: int
 
 class Project(ProjectBase):

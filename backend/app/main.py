@@ -1,7 +1,10 @@
-from fastapi import FastAPI, Depends, HTTPException, Query
+from fastapi import FastAPI, Depends, HTTPException, Query, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from fastapi.staticfiles import StaticFiles
+import shutil
+from pathlib import Path
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine, get_db
@@ -24,6 +27,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+UPLOAD_DIR = Path("uploads")
+if not UPLOAD_DIR.exists():
+    UPLOAD_DIR.mkdir(parents=True)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Корневой endpoint
 @app.get("/")
@@ -89,14 +98,36 @@ def delete_student(student_id: int, db: Session = Depends(get_db)):
 
 # Endpoints для проектов
 @app.post("/api/projects/", response_model=schemas.Project)
-def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
-    """Создание нового проекта"""
-    # Проверяем, существует ли студент
-    db_student = crud.get_student(db, student_id=project.student_id)
+async def create_project(
+    title: str = Form(...),
+    description: str = Form(...),
+    student_id: int = Form(...),
+    github_url: Optional[str] = Form(None),
+    demo_url: Optional[str] = Form(None),
+    image: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    db_student = crud.get_student(db, student_id=student_id)
     if db_student is None:
         raise HTTPException(status_code=404, detail="Student not found")
-    
-    return crud.create_project(db=db, project=project)
+
+    image_path = None
+    if image:
+        file_extension = Path(image.filename).suffix
+        unique_filename = f"{crud.generate_unique_filename()}{file_extension}"
+        file_path = UPLOAD_DIR / unique_filename
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        image_path = unique_filename
+
+    project_data = schemas.ProjectCreate(
+        title=title,
+        description=description,
+        student_id=student_id,
+        github_url=github_url,
+        demo_url=demo_url
+    )
+    return crud.create_project(db=db, project=project_data, image=image_path)
 
 @app.get("/api/students/{student_id}/projects", response_model=List[schemas.Project])
 def read_student_projects(student_id: int, db: Session = Depends(get_db)):
@@ -120,4 +151,3 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "message": "API is working correctly"}
-    
