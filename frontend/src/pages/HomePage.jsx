@@ -75,7 +75,7 @@ const HomePage = () => {
             Портфолио студентов
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Discover amazing projects created by talented students
+            Добавляйте себя и свои проекты прямо здесь!
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
