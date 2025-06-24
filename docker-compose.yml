@@ -1,0 +1,53 @@
+services:
+# Backend сервис
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app              # Bind mount (папка хоста)
+      - db_data:/app/data           # База данных сохраняется
+      - uploads_data:/app/uploads # Загруженные файлы сохраняются
+    environment:
+      - DATABASE_URL=sqlite:///./data/students.db
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep", "uvicorn"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Frontend сервис
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep", "nginx"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  db_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
+
+
+

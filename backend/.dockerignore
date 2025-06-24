@@ -1,0 +1,62 @@
+# Виртуальное окружение
+venv/
+env/
+.venv/
+ENV/
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Логи и временные файлы
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# IDE файлы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# База данных (используем volume)
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Загруженные файлы (используем volume)
+uploads/
+
+# Тесты
+tests/
+test_*
+*_test.py
+.pytest_cache/
+
+# Документация
+docs/
+README.md
+
+# Локальные настройки
+.env
+.env.local
+
+# Временные файлы
+tmp/
+temp/
+.cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
